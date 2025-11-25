@@ -1,23 +1,44 @@
 {
   "version": 2,
+  "buildCommand": "prisma generate",
   "builds": [
     {
-      "src": "server.js",
+      "src": "api/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "api/redirect.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/css/(.*)",
-      "dest": "/public/css/$1"
+      "src": "/healthz",
+      "dest": "/api/index.js"
     },
     {
-      "src": "/js/(.*)",
-      "dest": "/public/js/$1"
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/server.js"
+      "src": "/code/(.*)",
+      "dest": "/public/stats.html"
+    },
+    {
+      "src": "/(css|js)/(.*)",
+      "dest": "/public/$1/$2"
+    },
+    {
+      "src": "/",
+      "dest": "/public/index.html"
+    },
+    {
+      "src": "/([A-Za-z0-9]{6,8})",
+      "dest": "/api/redirect.js"
     }
   ]
 }
