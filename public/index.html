@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkSnap - Dashboard</title>
+  <meta name="description" content="A modern URL shortener with analytics. Create short, memorable links and track their performance.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <div class="logo-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+        </div>
+        <span class="logo-text">Link<span class="gradient-text">Snap</span></span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link active">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main dashboard-main">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Manage your links and track performance</p>
+        </div>
+        <button id="new-link-btn" class="btn btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>Add Link</span>
+        </button>
+      </div>
+
+      <!-- Add Link Form -->
+      <div id="add-form" class="card add-form hidden">
+        <h2 class="card-title">Add New Link</h2>
+        <form id="create-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="url-input">URL *</label>
+              <input type="text" id="url-input" class="input" placeholder="https://example.com/long-url">
+            </div>
+            <div class="form-group">
+              <label for="code-input">Custom Code (optional)</label>
+              <input type="text" id="code-input" class="input" placeholder="myCode1" maxlength="8">
+              <span class="helper-text">6-8 alphanumeric characters</span>
+            </div>
+            <button type="submit" id="submit-btn" class="btn btn-primary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              <span>Create</span>
+            </button>
+          </div>
+          <div id="form-error" class="form-error hidden">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span id="error-text"></span>
+          </div>
+          <div id="form-success" class="form-success hidden">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Link created successfully!</span>
+            <a id="success-link" href="#" target="_blank" class="success-link"></a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Stats Overview -->
+      <section class="section">
+        <h2 class="section-title">Overview</h2>
+        <div id="stats-grid" class="stats-grid">
+          <div class="stat-card skeleton-card">
+            <div class="skeleton skeleton-icon"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-number"></div>
+          </div>
+          <div class="stat-card skeleton-card">
+            <div class="skeleton skeleton-icon"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-number"></div>
+          </div>
+          <div class="stat-card skeleton-card">
+            <div class="skeleton skeleton-icon"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-number"></div>
+          </div>
+          <div class="stat-card skeleton-card">
+            <div class="skeleton skeleton-icon"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-number"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Links Table -->
+      <section class="section">
+        <h2 class="section-title">Your Links</h2>
+        
+        <!-- Search/Filter -->
+        <div class="table-controls">
+          <div class="search-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" id="search-input" class="input" placeholder="Filter by code or URL...">
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div id="links-container" class="card table-card">
+          <!-- Loading state -->
+          <div id="loading-state" class="table-state">
+            <div class="spinner"></div>
+            <p>Loading links...</p>
+          </div>
+
+          <!-- Empty state -->
+          <div id="empty-state" class="table-state hidden">
+            <div class="empty-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+            </div>
+            <h3>No links yet</h3>
+            <p>Create your first shortened link to get started!</p>
+          </div>
+
+          <!-- Error state -->
+          <div id="error-state" class="table-state hidden">
+            <div class="error-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <h3>Error loading links</h3>
+            <p id="error-state-text">Something went wrong</p>
+            <button id="retry-btn" class="btn btn-secondary">Try Again</button>
+          </div>
+
+          <!-- Table -->
+          <div id="table-wrapper" class="table-wrapper hidden">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>
+                    <button class="sort-btn" data-sort="code">
+                      Short Code
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6"/>
+                      </svg>
+                    </button>
+                  </th>
+                  <th class="hide-mobile">Target URL</th>
+                  <th>
+                    <button class="sort-btn" data-sort="clicks">
+                      Total Clicks
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6"/>
+                      </svg>
+                    </button>
+                  </th>
+                  <th class="hide-tablet">
+                    <button class="sort-btn" data-sort="lastClickedAt">
+                      Last Clicked
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6"/>
+                      </svg>
+                    </button>
+                  </th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="links-table-body">
+              </tbody>
+            </table>
+          </div>
+
+          <!-- No results -->
+          <div id="no-results" class="table-state hidden">
+            <p>No links match your search</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+        </div>
+        <span>LinkSnap</span>
+      </div>
+      <p class="footer-text">Built with Node.js & Express</p>
+    </div>
+  </footer>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
